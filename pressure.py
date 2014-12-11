@@ -29,8 +29,10 @@ class fromMenu(wx.Menu):
         fromTo = text + "_" + toUnitText
 
         ## if text is only digits, then convert and display result
-        if fromEnter.GetValue().isdigit():
-            toEnter.SetLabel(str(int(fromEnter.GetValue()) * conversionFactors[fromTo]))
+        try:
+            toEnter.SetValue(str(int(fromEnter.GetValue()) * conversionFactors[fromTo]))
+        except ValueError:
+            toEnter.SetValue("Only Enter Digits")
 
 
 
@@ -57,13 +59,15 @@ class toMenu(wx.Menu):
         fromTo=fromUnitText + "_" + text
 
         ## if text is only digits, then convert and display result
-        if fromEnter.GetValue().isdigit():
-            toEnter.SetLabel(str(int(fromEnter.GetValue()) * conversionFactors[fromTo]))
+        try:
+            toEnter.SetValue(str(int(fromEnter.GetValue()) * conversionFactors[fromTo]))
+        except ValueError:
+            toEnter.SetValue("Error")
 
 
 class pressureConvert(wx.Frame):
     def __init__(self,parent,id,title):
-        wx.Frame.__init__(self,parent,id,title)
+        wx.Frame.__init__(self,parent,id,title, style= wx.SYSTEM_MENU | wx.CAPTION | wx.CLOSE_BOX)
         self.parent = parent
         self.initialize()
 
@@ -79,11 +83,13 @@ class pressureConvert(wx.Frame):
         global fromTo
         fromTo="psi_psi"
 
+
         panel = wx.Panel(self)
 
         hbox = wx.BoxSizer(wx.HORIZONTAL)
 
         fgs = wx.FlexGridSizer(3, 3, 9, 25)
+
 
         global fromText
         fromText = wx.Button(panel, id=0, label="From psi")
@@ -93,7 +99,9 @@ class pressureConvert(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.OnToFromTextSelected)
 
         global fromEnter
-        fromEnter = wx.TextCtrl(panel)
+        fromEnter = wx.TextCtrl(panel, -1, style=wx.TE_PROCESS_ENTER)
+        ## Bind typing enter from text box to updating the returned conversion
+        self.Bind(wx.EVT_TEXT_ENTER, self.OnEnterKeyPress)
 
         global toEnter
         toEnter = wx.TextCtrl(panel,-1,style=wx.TE_READONLY)
@@ -107,8 +115,16 @@ class pressureConvert(wx.Frame):
 
         hbox.Add(fgs, proportion=1, flag=wx.ALL|wx.EXPAND, border=15)
         panel.SetSizer(hbox)
-        self.SetSize((275,120))
+        self.SetSize((275,100))
         self.Show(True)
+
+    def OnEnterKeyPress(self, event):
+        try:
+            fromInt = int(fromEnter.GetValue())
+            toString = str(fromInt * conversionFactors[fromTo])
+            toEnter.SetValue(toString)
+        except ValueError:
+            toEnter.SetValue("Error")
 
     def OnToFromTextSelected(self,event):
         buttonID = event.GetId()
