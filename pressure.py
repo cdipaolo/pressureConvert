@@ -13,6 +13,13 @@ class simpleapp_wx(wx.Frame):
         self.parent = parent
         self.initialize()
 
+        ## Conversion Factors using "From_To" as key to multiply by
+        self.conversionFactors = {"psi_psi":1,"bar_psi":14.504,"atm_psi":14.7,"Pa_psi":.000145,"mmHg_psi":.01934,
+                                "psi_bar":.0689,"bar_bar":1,"atm_bar":1.01325,"Pa_bar":.00001,"mmHg_bar":.001333,
+                                "psi_atm":.0681,"bar_atm":.987,"atm_atm":1,"Pa_atm":.00001,"mmHg_atm":.001316,
+                                "psi_Pa":6895,"bar_Pa":100000,"atm_Pa":101325,"Pa_Pa":1,"mmHg_Pa":133.3,
+                                "psi_mmHg":51.715,"bar_mmHg":750.1,"atm_mmHg":760,"Pa_mmHg":.0075,"mmHg_mmHg":1}
+
     def initialize(self):
         panel = wx.Panel(self)
 
