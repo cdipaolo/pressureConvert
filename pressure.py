@@ -60,6 +60,7 @@ class toMenu(wx.Menu):
         fromUnitText = fromText.GetLabel().split(" ")[1]
         fromTo=fromUnitText + "_" + text
 
+
         ## if text is only digits, then convert and display result
         try:
             fromFloat = float(fromEnter.GetValue())
@@ -123,6 +124,7 @@ class pressureConvert(wx.Frame):
         self.Show(True)
 
     def OnEnterKeyPress(self, event):
+        fromTo = (fromText.GetLabel().split(" ")[1]) + "_" + toText.GetLabel().split(" ")[1]
         try:
             fromFloat = float(fromEnter.GetValue())
             toString = str(fromFloat * conversionFactors[fromTo])
