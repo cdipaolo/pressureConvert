@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: iso-8859-1 -*-
-
+import string
 try:
     import wx
 except ImportError:
@@ -21,7 +21,18 @@ class fromMenu(wx.Menu):
     def OnFromUnitSelected(self,event):
         fromUnit = self.FindItemById(event.GetId())
         text = fromUnit.GetText()
+
+        ## set "From ___" label
         fromText.SetLabel("From %s"% text)
+
+        toUnitText = toText.GetLabel().split(" ")[1]
+        fromTo = text + "_" + toUnitText
+
+        ## if text is only digits, then convert and display result
+        if fromEnter.GetValue().isdigit():
+            toEnter.SetLabel(str(int(fromEnter.GetValue()) * conversionFactors[fromTo]))
+
+
 
 class toMenu(wx.Menu):
     
@@ -38,10 +49,19 @@ class toMenu(wx.Menu):
     def OnToUnitSelected(self,event):
         toUnit = self.FindItemById(event.GetId())
         text = toUnit.GetText()
+
+        ## set "To ___" label to correct unit
         toText.SetLabel("To %s"% text)
 
+        fromUnitText = fromText.GetLabel().split(" ")[1]
+        fromTo=fromUnitText + "_" + text
 
-class simpleapp_wx(wx.Frame):
+        ## if text is only digits, then convert and display result
+        if fromEnter.GetValue().isdigit():
+            toEnter.SetLabel(str(int(fromEnter.GetValue()) * conversionFactors[fromTo]))
+
+
+class pressureConvert(wx.Frame):
     def __init__(self,parent,id,title):
         wx.Frame.__init__(self,parent,id,title)
         self.parent = parent
@@ -49,7 +69,8 @@ class simpleapp_wx(wx.Frame):
 
     def initialize(self):
         ## Conversion Factors using "From_To" as key to multiply by
-        self.conversionFactors = {"psi_psi":1,"bar_psi":14.504,"atm_psi":14.7,"Pa_psi":.000145,"mmHg_psi":.01934,
+        global conversionFactors
+        conversionFactors = {"psi_psi":1,"bar_psi":14.504,"atm_psi":14.7,"Pa_psi":.000145,"mmHg_psi":.01934,
                                 "psi_bar":.0689,"bar_bar":1,"atm_bar":1.01325,"Pa_bar":.00001,"mmHg_bar":.001333,
                                 "psi_atm":.0681,"bar_atm":.987,"atm_atm":1,"Pa_atm":.00001,"mmHg_atm":.001316,
                                 "psi_Pa":6895,"bar_Pa":100000,"atm_Pa":101325,"Pa_Pa":1,"mmHg_Pa":133.3,
@@ -65,17 +86,17 @@ class simpleapp_wx(wx.Frame):
         fgs = wx.FlexGridSizer(3, 3, 9, 25)
 
         global fromText
-        fromText = wx.Button(panel, id=wx.ID_ANY, label="From Psi")
-        self.Bind(wx.EVT_BUTTON, self.OnFromTextSelected)
+        fromText = wx.Button(panel, id=0, label="From psi")
 
         global toText
-        toText = wx.Button(panel, id=wx.ID_ANY, label="To Psi")
-        self.Bind(wx.EVT_BUTTON, self.OnToTextSelected)
+        toText = wx.Button(panel, id=-1, label="To psi")
+        self.Bind(wx.EVT_BUTTON, self.OnToFromTextSelected)
 
+        global fromEnter
         fromEnter = wx.TextCtrl(panel)
-        toEnter = wx.TextCtrl(panel)
 
-        #self.PopupMenu(fromMenu(self), (0,0))
+        global toEnter
+        toEnter = wx.TextCtrl(panel,-1,style=wx.TE_READONLY)
 
         fgs.AddMany([(fromText), (wx.StaticText(panel),1,wx.EXPAND), (toText), 
             (fromEnter, 1, wx.EXPAND), (wx.StaticText(panel, label="=")), (toEnter, 1, wx.EXPAND),
@@ -89,14 +110,18 @@ class simpleapp_wx(wx.Frame):
         self.SetSize((275,120))
         self.Show(True)
 
-    def OnFromTextSelected(self,event):
-        self.PopupMenu(fromMenu(self), (10,10))
+    def OnToFromTextSelected(self,event):
+        buttonID = event.GetId()
+        buttonByID = self.FindWindowById(buttonID)
+        buttonStartText = buttonByID.GetLabel().split(" ")[0]
 
-
-    def OnToTextSelected(self,event):
-        self.PopupMenu(toMenu(self), (75,10))
+        ## Check if Button Label is "To" or "From" and handle menu appropriately
+        if buttonStartText == "From":
+            self.PopupMenu(fromMenu(self), (25,10))
+        elif buttonStartText == "To":
+            self.PopupMenu(toMenu(self), (195,10))
 
 if __name__ == "__main__":
     app = wx.App()
-    frame = simpleapp_wx(None,-1,'Pressure Convert')
+    frame = pressureConvert(None,-1,'Pressure Convert')
     app.MainLoop()
