@@ -14,6 +14,9 @@ Click on the "From ___" or "To ___" buttons and select the unit you want to conv
 
 #Room For Improvement:
 -Cut extensive usage of global variables
--Improve UI (although that is challenging with wxPython :) )
+
+-Improve UI -although that is challenging with the limitations of wxPython :)
+
 -Be responsive to user input without having to hit enter
+
 -Change to use more accurate conversion factors
