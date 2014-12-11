@@ -30,7 +30,9 @@ class fromMenu(wx.Menu):
 
         ## if text is only digits, then convert and display result
         try:
-            toEnter.SetValue(str(int(fromEnter.GetValue()) * conversionFactors[fromTo]))
+            fromFloat = float(fromEnter.GetValue())
+            toString = str(fromFloat * conversionFactors[fromTo])
+            toEnter.SetValue(toString)
         except ValueError:
             toEnter.SetValue("Only Enter Digits")
 
@@ -60,7 +62,9 @@ class toMenu(wx.Menu):
 
         ## if text is only digits, then convert and display result
         try:
-            toEnter.SetValue(str(int(fromEnter.GetValue()) * conversionFactors[fromTo]))
+            fromFloat = float(fromEnter.GetValue())
+            toString = str(fromFloat * conversionFactors[fromTo])
+            toEnter.SetValue(toString)
         except ValueError:
             toEnter.SetValue("Error")
 
@@ -120,8 +124,8 @@ class pressureConvert(wx.Frame):
 
     def OnEnterKeyPress(self, event):
         try:
-            fromInt = int(fromEnter.GetValue())
-            toString = str(fromInt * conversionFactors[fromTo])
+            fromFloat = float(fromEnter.GetValue())
+            toString = str(fromFloat * conversionFactors[fromTo])
             toEnter.SetValue(toString)
         except ValueError:
             toEnter.SetValue("Error")
